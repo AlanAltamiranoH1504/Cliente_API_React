@@ -1,19 +1,20 @@
-import React, {Fragment, useState} from "react";
-import Swal from "sweetalert2";
-import {useNavigate} from "react-router-dom";
-
+import React, {Fragment, useEffect, useState} from "react";
+import {useParams} from "react-router-dom";
 import {clienteAxios} from "../../config/axios";
 
-const NuevoCliente = () => {
-    const navigate = useNavigate();
+const EditarCliente = (props) => {
+    //Obtencion id de react router dom
+    const {id} = useParams();
+    const [cliente, setCliente] = useState(null);
 
-    const [cliente, setCliente] = useState({
-        nombre: "",
-        apellidos: "",
-        empresa: "",
-        email: "",
-        telefono: ""
-    });
+    async function busquedaCliente() {
+        try {
+            const response = await clienteAxios.get(`/clientes/cliente/${id}`);
+            setCliente(response.data);
+        }catch (e) {
+            console.log("Error en busqueda de cliente: " + e.message);
+        }
+    }
 
     function actulizarState(e) {
         setCliente({
@@ -21,37 +22,17 @@ const NuevoCliente = () => {
         });
     }
 
-    function validarCliente() {
-        const {nombre, apellidos, empresa, email, telefono} = cliente;
-        if (nombre, apellidos, empresa, empresa, empresa, telefono){
-            return false;
-        }else {
-            return true;
-        }
-    }
+    useEffect(() => {
+        busquedaCliente();
+    }, []);
 
-    async function saveCliente(e) {
-        e.preventDefault();
-        try {
-            const response = await clienteAxios.post("/clientes/cliente", cliente);
-            if (response.status === 201){
-                Swal.fire({
-                    title: "Cliente agregado correctamente!",
-                    text: "El cliente se agrego correctamente!",
-                    icon: "success",
-                    timer: 3000
-                });
-                navigate("/");
-            }
-        }catch (error) {
-            console.log("Error en peticion al backend: " + error.message);
-        }
+    if (!cliente) {
+        return <p>Cargando cliente...</p>;
     }
-
     return (
         <Fragment>
             <h2>Nuevo Cliente</h2>
-            <form onSubmit={saveCliente}>
+            <form>
                 <legend>Llena todos los campos</legend>
 
                 <div className="campo">
@@ -59,6 +40,7 @@ const NuevoCliente = () => {
                     <input
                         type="text" placeholder="Nombre Cliente" name="nombre"
                         onChange={actulizarState}
+                        value={cliente.nombre}
                     />
                 </div>
 
@@ -67,6 +49,7 @@ const NuevoCliente = () => {
                     <input
                         type="text" placeholder="Apellido Cliente" name="apellidos"
                         onChange={actulizarState}
+                        value={cliente.apellidos}
                     />
                 </div>
 
@@ -75,6 +58,7 @@ const NuevoCliente = () => {
                     <input
                         type="text" placeholder="Empresa Cliente" name="empresa"
                         onChange={actulizarState}
+                        value={cliente.empresa}
                     />
                 </div>
 
@@ -83,6 +67,7 @@ const NuevoCliente = () => {
                     <input
                         type="email" placeholder="Email Cliente" name="email"
                         onChange={actulizarState}
+                        value={cliente.email}
                     />
                 </div>
 
@@ -91,13 +76,13 @@ const NuevoCliente = () => {
                     <input
                         type="text" placeholder="Teléfono Cliente" name="telefono"
                         onChange={actulizarState}
+                        value={cliente.telefono}
                     />
                 </div>
 
                 <div className="enviar">
                     <input
                         type="submit" className="btn btn-azul" value="Agregar Cliente"
-                        disabled={validarCliente()}
                     />
                 </div>
             </form>
@@ -105,4 +90,4 @@ const NuevoCliente = () => {
     );
 }
 
-export default NuevoCliente;
+export default EditarCliente;

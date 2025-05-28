@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "react-router-dom";
 
 const ClienteDetalles = ({cliente}) => {
 
@@ -12,10 +13,7 @@ const ClienteDetalles = ({cliente}) => {
                 <p>{telefono}</p>
             </div>
             <div className="acciones">
-                <a href="#" className="btn btn-azul">
-                    <i className="fas fa-pen-alt"></i>
-                    Editar Cliente
-                </a>
+                <Link to={`/clientes/editar/${cliente._id}`} className="btn btn-azul">Editar Cliente</Link>
                 <button type="button" className="btn btn-rojo btn-eliminar">
                     <i className="fas fa-times"></i>
                     Eliminar Cliente

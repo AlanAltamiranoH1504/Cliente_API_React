@@ -10,6 +10,7 @@ import Navegacion from "./components/layout/Navegacion";
 //Clientes
 import Cliente from "./components/clientes/Cliente";
 import NuevoCliente from "./components/clientes/NuevoCliente";
+import EditarCliente from "./components/clientes/EditarCliente";
 
 //Productos
 import Productos from "./components/productos/Productos";
@@ -29,6 +30,7 @@ function App() {
                         <Routes>
                             <Route exact path="/" element={< Cliente />}></Route>
                             <Route exact path="/clientes/nuevo" element={<NuevoCliente/>}></Route>
+                            <Route exact path="/clientes/editar/:id" element={<EditarCliente />}></Route>
                             <Route exact path="/productos" element={<Productos/>}></Route>
                             <Route exact path="/pedidos" element={<Pedidos />}></Route>
                         </Routes>
