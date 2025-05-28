@@ -1,18 +1,27 @@
 import React, {Fragment, useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 import {useParams} from "react-router-dom";
 import {clienteAxios} from "../../config/axios";
+import Swal from "sweetalert2";
 
-const EditarCliente = (props) => {
+const EditarCliente = () => {
     //Obtencion id de react router dom
     const {id} = useParams();
     const [cliente, setCliente] = useState(null);
+    const navigate = useNavigate();
 
     async function busquedaCliente() {
         try {
             const response = await clienteAxios.get(`/clientes/cliente/${id}`);
             setCliente(response.data);
         }catch (e) {
-            console.log("Error en busqueda de cliente: " + e.message);
+            Swal.fire({
+                title: "Error en busqueda de cliente",
+                text: "No se encontro un cliente con el ID: "  + id,
+                icon: "error",
+                timer: 3000,
+            });
+            navigate("/");
         }
     }
 
@@ -20,6 +29,38 @@ const EditarCliente = (props) => {
         setCliente({
             ...cliente, [e.target.name]: e.target.value
         });
+    }
+    function validarCliente() {
+        const {nombre, apellidos, empresa, email, telefono} = cliente;
+        if (nombre, apellidos, empresa, empresa, empresa, telefono){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    async function updateCliente(e){
+        e.preventDefault();
+        try {
+            const response = await clienteAxios.put(`/clientes/cliente/${id}`, cliente);
+            if (response.status === 200){
+                Swal.fire({
+                    icon: "success",
+                    title: "Actualizacion de Cliente",
+                    text: "Cliente actualizado correctamente",
+                    timer: 3000
+                });
+                navigate("/");
+            }
+        }catch (e) {
+            Swal.fire({
+                title: "Error en actualizacion de cliente",
+                text: "Hubo un error en la actualizacion del cliente: " + id,
+                icon: "error",
+                timer: 3000,
+            });
+            navigate("/");
+        }
     }
 
     useEffect(() => {
@@ -32,7 +73,9 @@ const EditarCliente = (props) => {
     return (
         <Fragment>
             <h2>Nuevo Cliente</h2>
-            <form>
+            <form
+                onSubmit={updateCliente}
+            >
                 <legend>Llena todos los campos</legend>
 
                 <div className="campo">
@@ -82,7 +125,8 @@ const EditarCliente = (props) => {
 
                 <div className="enviar">
                     <input
-                        type="submit" className="btn btn-azul" value="Agregar Cliente"
+                        type="submit" className="btn btn-azul" value="Actualizar Cliente"
+                        disabled={validarCliente()}
                     />
                 </div>
             </form>
