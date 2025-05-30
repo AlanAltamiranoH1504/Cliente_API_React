@@ -14,8 +14,9 @@ const ClienteDetalles = ({cliente}) => {
             </div>
             <div className="acciones">
                 <Link to={`/clientes/editar/${cliente._id}`} className="btn btn-azul">Editar Cliente</Link>
+                <Link to={`/pedidos/nuevo/${cliente._id}`} className="btn btn-amarillo">Nuevo Pedido</Link>
                 <Link to={`/clientes/eliminar/${cliente._id}`} className="btn btn-rojo btn-eliminar">Eliminar Cliente</Link>
-              </div>
+            </div>
         </li>
     );
 }
