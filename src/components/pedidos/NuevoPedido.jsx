@@ -130,7 +130,7 @@ const NuevoPedido = () => {
                     />
                 </div>
                 <div className="enviar">
-                    <input type="submit" className="btn btn-azul" value="Agregar Pedido"
+                    <input type="submit" className="btn btn-verde" value="Realizar Pedido"
                         disabled={carritoVacio()}
                         onClick={savePedido}
                     />
