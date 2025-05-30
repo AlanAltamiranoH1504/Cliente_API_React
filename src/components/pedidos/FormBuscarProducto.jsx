@@ -1,6 +1,6 @@
 import React, {Fragment} from "react";
 
-const FormBuscarProducto = ({buscarProducto, leerDatosBusqueda}) => {
+const FormBuscarProducto = ({buscarProducto, leerDatosBusqueda, productoBuscarVacio}) => {
     return(
         <Fragment>
             <form
@@ -16,7 +16,7 @@ const FormBuscarProducto = ({buscarProducto, leerDatosBusqueda}) => {
                     />
                 </div>
 
-                <input type="submit" className="btn btn-azul btn-block" value="Buscar Producto"/>
+                <input disabled={productoBuscarVacio()} type="submit" className="btn btn-azul btn-block" value="Buscar Producto"/>
             </form>
         </Fragment>
     )

@@ -6,12 +6,14 @@ import FormBuscarProducto from "./FormBuscarProducto";
 import Swal from "sweetalert2";
 import {useNavigate} from "react-router-dom";
 import ListProductosEncontrados from "./ListProductosEncontrados";
+import DetallesCarrito from "./DetallesCarrito";
 
 const NuevoPedido = () => {
     const {id} = useParams();
     const navigate = useNavigate();
     const [productoBuscar, setProductoBuscar] = useState("");
     const [productoEncontrados, setProductosEncontrados] = useState([]);
+    const [carrito, setCarrito] = useState([]);
 
     async function buscarProducto(e) {
         e.preventDefault();
@@ -19,7 +21,6 @@ const NuevoPedido = () => {
             //Obtenemos productos de la busqueda
             const response = await clienteAxios.post("/productos/producto/busqueda", {productoBuscar: productoBuscar});
             if (response.status === 200){
-                console.log("Se encontraron productos");
                 setProductosEncontrados(response.data);
             }
         }catch (e) {
@@ -33,8 +34,24 @@ const NuevoPedido = () => {
         }
     }
 
+    function productoBuscarVacio() {
+        if (productoBuscar.trim() === "") {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     function leerDatosBusqueda(e) {
         setProductoBuscar(e.target.value);
+    }
+
+    function carritoVacio () {
+        if (carrito.length > 0){
+            return false;
+        } else {
+            return true;
+        }
     }
 
     return (
@@ -44,21 +61,28 @@ const NuevoPedido = () => {
             <FormBuscarProducto
                 buscarProducto={buscarProducto}
                 leerDatosBusqueda={leerDatosBusqueda}
+                productoBuscarVacio={productoBuscarVacio}
             />
                 <ul className="resumen">
                     {productoEncontrados.map((producto) => {
                         return (
-                            <ListProductosEncontrados key={producto.id}  producto={producto} />
+                            <ListProductosEncontrados
+                                key={producto._id}
+                                producto={producto}
+                                carrito={carrito}
+                                setCarrito={setCarrito}
+                            />
                         )
                     })}
                 </ul>
 
+                <DetallesCarrito carrito={carrito} />
                 <div className="campo">
                     <label>Total:</label>
                     <input type="number" name="precio" placeholder="Precio" readOnly="readonly"/>
                 </div>
                 <div className="enviar">
-                    <input type="submit" className="btn btn-azul" value="Agregar Pedido"/>
+                    <input type="submit" className="btn btn-azul" value="Agregar Pedido" disabled={carritoVacio()}/>
                 </div>
         </Fragment>
     );
