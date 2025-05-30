@@ -54,6 +54,52 @@ const NuevoPedido = () => {
         }
     }
 
+    function costoTotalCarrito(){
+        const carritoVacioCondicion = carritoVacio();
+        if (carritoVacioCondicion) {
+        }else{
+            const totalCarrito = carrito.reduce((total, item) =>{
+                return total + (item.cantidad * item.precio);
+            }, 0);
+            return totalCarrito;
+        }
+    }
+
+    async function savePedido(){
+        try {
+            const productosFormato = carrito.map((producto) =>{
+                return {
+                    producto: producto._id,
+                    cantidad: producto.cantidad
+                }
+            });
+
+            const response = await clienteAxios.post("/pedidos", {
+                cliente: id,
+                productos: productosFormato,
+                total: costoTotalCarrito()
+            });
+
+            if (response.status === 201){
+                Swal.fire({
+                    icon: "success",
+                    title: "Pedido agregado correctamente!",
+                    text: "Pedido agregado por el cliente!",
+                    timer: 3000
+                })
+                navigate("/pedidos");
+            }
+        }catch (e) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "No se pudo guardar el pedido",
+                timer: 3000
+            });
+            navigate("/pedidos");
+        }
+    }
+
     return (
         <Fragment>
             <h2>Nuevo Pedido</h2>
@@ -79,10 +125,15 @@ const NuevoPedido = () => {
                 <DetallesCarrito carrito={carrito} />
                 <div className="campo">
                     <label>Total:</label>
-                    <input type="number" name="precio" placeholder="Precio" readOnly="readonly"/>
+                    <input type="number" name="precio" placeholder="Precio" readOnly="readonly"
+                        value={costoTotalCarrito()}
+                    />
                 </div>
                 <div className="enviar">
-                    <input type="submit" className="btn btn-azul" value="Agregar Pedido" disabled={carritoVacio()}/>
+                    <input type="submit" className="btn btn-azul" value="Agregar Pedido"
+                        disabled={carritoVacio()}
+                        onClick={savePedido}
+                    />
                 </div>
         </Fragment>
     );

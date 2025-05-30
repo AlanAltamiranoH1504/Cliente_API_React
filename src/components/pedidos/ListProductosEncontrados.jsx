@@ -8,14 +8,21 @@ const ListProductosEncontrados = ({producto, carrito, setCarrito}) => {
             return item._id == producto._id;
         });
 
-        if (itemExistente >= 0){
+        if (itemExistente >= 0) {
             const updatedCarrito = [...carrito];
             updatedCarrito[itemExistente].cantidad++;
             setCarrito(updatedCarrito);
-        }else {
+        } else {
             producto.cantidad = 1;
             setCarrito([...carrito, producto]);
         }
+    }
+
+    function eliminarProductoDeCarrito(producto) {
+        const updatedCarrito = carrito.filter((item) => {
+            return producto._id !== item._id;
+        });
+        setCarrito(updatedCarrito);
     }
 
     return (
@@ -27,7 +34,8 @@ const ListProductosEncontrados = ({producto, carrito, setCarrito}) => {
                 </div>
                 <div className="acciones">
                     <div className="contenedor-cantidad">
-                        <i className="fas fa-minus">-</i>
+                        <i className="fas fa-minus"
+                        >-</i>
                         <input type="text" name="cantidad" disabled/>
                         <i
                             className="fas fa-plus"
@@ -36,7 +44,10 @@ const ListProductosEncontrados = ({producto, carrito, setCarrito}) => {
                             }}
                         >+</i>
                     </div>
-                    <button type="button" className="btn btn-rojo">
+                    <button type="button" className="btn btn-rojo"
+                            onClick={() => {
+                                eliminarProductoDeCarrito(producto)
+                            }}>
                         <i className="fas fa-minus-circle"></i>
                         Eliminar Producto
                     </button>
