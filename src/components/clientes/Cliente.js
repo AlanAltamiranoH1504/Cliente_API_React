@@ -9,7 +9,11 @@ const Cliente = () => {
 
     //Funciones
     async function consultarAPI() {
-        const listClientes = await clienteAxios.get("/clientes");
+        const listClientes = await clienteAxios.get("/clientes", {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        });
         const {data} = listClientes;
         setClientes(data);
     }
