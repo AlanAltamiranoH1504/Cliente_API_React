@@ -1,12 +1,13 @@
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useContext, useEffect, useState} from "react";
 import Swal from "sweetalert2";
 import {useNavigate} from "react-router-dom";
 
 import {clienteAxios} from "../../config/axios";
+import {CRMContext} from "../context/CRMContext";
 
 const NuevoCliente = () => {
     const navigate = useNavigate();
-
+    const [auth, setAuth] = useContext(CRMContext);
     const [cliente, setCliente] = useState({
         nombre: "",
         apellidos: "",
@@ -14,6 +15,13 @@ const NuevoCliente = () => {
         email: "",
         telefono: ""
     });
+    console.log(auth)
+
+    function verificarAutenticacion() {
+        if (auth.toke === "" || auth.auth == false){
+            navigate("/iniciar-sesion");
+        }
+    }
 
     function actulizarState(e) {
         setCliente({
@@ -57,6 +65,10 @@ const NuevoCliente = () => {
             navigate("/");
         }
     }
+
+    useEffect(() => {
+        verificarAutenticacion();
+    });
 
     return (
         <Fragment>

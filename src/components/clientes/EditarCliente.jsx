@@ -1,31 +1,37 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useParams} from "react-router-dom";
 import {clienteAxios} from "../../config/axios";
 import Swal from "sweetalert2";
+import {CRMContext} from "../context/CRMContext";
 
 const EditarCliente = () => {
     //Obtencion id de react router dom
     const {id} = useParams();
     const [cliente, setCliente] = useState(null);
+    const [auth, setAuth] = useContext(CRMContext);
     const navigate = useNavigate();
 
     async function busquedaCliente() {
-        try {
-            const response = await clienteAxios.get(`/clientes/cliente/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                }
-            });
-            setCliente(response.data);
-        }catch (e) {
-            Swal.fire({
-                title: "Error en busqueda de cliente",
-                text: e.response.data.error,
-                icon: "error",
-                timer: 3000,
-            });
-            navigate("/");
+        if (auth.token !== "" && auth.auth == true) {
+            try {
+                const response = await clienteAxios.get(`/clientes/cliente/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+                setCliente(response.data);
+            } catch (e) {
+                Swal.fire({
+                    title: "Error en busqueda de cliente",
+                    text: e.response.data.error,
+                    icon: "error",
+                    timer: 3000,
+                });
+                navigate("/");
+            }
+        } else {
+            navigate("/iniciar-sesion");
         }
     }
 
@@ -34,16 +40,17 @@ const EditarCliente = () => {
             ...cliente, [e.target.name]: e.target.value
         });
     }
+
     function validarCliente() {
         const {nombre, apellidos, empresa, email, telefono} = cliente;
-        if (nombre, apellidos, empresa, empresa, empresa, telefono){
+        if (nombre, apellidos, empresa, empresa, empresa, telefono) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
 
-    async function updateCliente(e){
+    async function updateCliente(e) {
         e.preventDefault();
         try {
             const response = await clienteAxios.put(`/clientes/cliente/${id}`, cliente, {
@@ -51,7 +58,7 @@ const EditarCliente = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             });
-            if (response.status === 200){
+            if (response.status === 200) {
                 Swal.fire({
                     icon: "success",
                     title: "Actualizacion de Cliente",
@@ -60,7 +67,7 @@ const EditarCliente = () => {
                 });
                 navigate("/");
             }
-        }catch (e) {
+        } catch (e) {
             Swal.fire({
                 title: "Error en actualizacion de cliente",
                 text: "Hubo un error en la actualizacion del cliente: " + id,

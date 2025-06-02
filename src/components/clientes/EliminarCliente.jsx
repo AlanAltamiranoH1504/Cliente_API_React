@@ -1,39 +1,45 @@
-import React, {Fragment} from "react";
+import React, {Fragment, useContext} from "react";
 import Swal from "sweetalert2";
 import {useParams} from "react-router-dom";
 import {useNavigate} from "react-router-dom";
 import {clienteAxios} from "../../config/axios";
+import {CRMContext} from "../context/CRMContext";
 
 const EliminarCliente = () => {
     const navigate = useNavigate();
     const {id} = useParams();
+    const [auth, setAuth] = useContext(CRMContext);
     eliminarCliente();
 
     //Funciones
-    async function eliminarCliente(){
-        try {
-            const response = await clienteAxios.delete(`/clientes/cliente/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+    async function eliminarCliente() {
+        if (auth.token !== "" && auth.auth) {
+            try {
+                const response = await clienteAxios.delete(`/clientes/cliente/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+                if (response.status === 200) {
+                    Swal.fire({
+                        title: "Cliente eliminado correctamente!",
+                        icon: "success",
+                        timer: 3000,
+                        text: "El cliente fue eliminado correctamente.",
+                    });
+                    navigate("/");
                 }
-            });
-            if (response.status === 200){
+            } catch (e) {
                 Swal.fire({
-                    title: "Cliente eliminado correctamente!",
-                    icon: "success",
+                    title: "Error en eliminacion de cliente",
+                    icon: "error",
                     timer: 3000,
-                    text: "El cliente fue eliminado correctamente.",
+                    text: "Ocurrio un error en la eliminacion del cliente"
                 });
                 navigate("/");
             }
-        }catch (e) {
-            Swal.fire({
-                title: "Error en eliminacion de cliente",
-                icon: "error",
-                timer: 3000,
-                text: "Ocurrio un error en la eliminacion del cliente"
-            });
-            navigate("/");
+        } else {
+            navigate("/iniciar-sesion");
         }
     }
 

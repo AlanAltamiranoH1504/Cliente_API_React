@@ -1,32 +1,38 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useContext, useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {useNavigate} from "react-router-dom";
 import {clienteAxios} from "../../config/axios";
 import Swal from "sweetalert2";
+import {CRMContext} from "../context/CRMContext";
 
 const EditarProducto = () => {
     const navigate = useNavigate();
     const {id} = useParams();
     const [producto, setProducto] = useState({});
+    const [auth, seAuth] = useContext(CRMContext);
 
     async function findProducto() {
-        try {
-            const response = await clienteAxios.get(`/productos/producto/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+        if (auth.token !== "" && auth.auth) {
+            try {
+                const response = await clienteAxios.get(`/productos/producto/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+                if (response.status === 200) {
+                    setProducto(response.data);
                 }
-            });
-            if (response.status === 200) {
-                setProducto(response.data);
+            } catch (e) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error en busqueda de producto',
+                    timer: 3000,
+                    text: "Producto no existente"
+                });
+                navigate("/productos");
             }
-        } catch (e) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error en busqueda de producto',
-                timer: 3000,
-                text: "Producto no existente"
-            });
-            navigate("/productos");
+        } else {
+            navigate("/iniciar-sesion");
         }
     }
 
@@ -45,7 +51,7 @@ const EditarProducto = () => {
         }
     }
 
-    async function updateProducto(e){
+    async function updateProducto(e) {
         e.preventDefault();
         try {
             const response = await clienteAxios.put(`/productos/producto/${id}`, producto, {
@@ -53,7 +59,7 @@ const EditarProducto = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             });
-            if (response.status === 200){
+            if (response.status === 200) {
                 Swal.fire({
                     icon: "success",
                     title: "Producto actualizado",
@@ -62,7 +68,7 @@ const EditarProducto = () => {
                 });
                 navigate("/productos");
             }
-        }catch (e) {
+        } catch (e) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error en actualizacion de producto',
@@ -76,7 +82,7 @@ const EditarProducto = () => {
         findProducto();
     }, []);
 
-    if (!producto){
+    if (!producto) {
         return <p>Cargando Producto...</p>
     }
 

@@ -1,4 +1,4 @@
-import React, {Fragment, useState, useEffect, use} from "react";
+import React, {Fragment, useState, useEffect, use, useContext} from "react";
 import {useParams} from "react-router-dom";
 import {clienteAxios} from "../../config/axios";
 import TarjetaDetallesCliente from "./TarjetaDetallesCliente";
@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import {useNavigate} from "react-router-dom";
 import ListProductosEncontrados from "./ListProductosEncontrados";
 import DetallesCarrito from "./DetallesCarrito";
+import {CRMContext} from "../context/CRMContext";
 
 const NuevoPedido = () => {
     const {id} = useParams();
@@ -14,20 +15,27 @@ const NuevoPedido = () => {
     const [productoBuscar, setProductoBuscar] = useState("");
     const [productoEncontrados, setProductosEncontrados] = useState([]);
     const [carrito, setCarrito] = useState([]);
+    const [auth, setAuth] = useContext(CRMContext);
+
+    function verificarAutenticacion() {
+        if (auth.token === "" || auth.auth == false){
+            navigate("/iniciar-sesion");
+        }
+    }
 
     async function buscarProducto(e) {
         e.preventDefault();
         try {
             //Obtenemos productos de la busqueda
-            const response = await clienteAxios.post("/productos/producto/busqueda", {productoBuscar: productoBuscar},{
+            const response = await clienteAxios.post("/productos/producto/busqueda", {productoBuscar: productoBuscar}, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             });
-            if (response.status === 200){
+            if (response.status === 200) {
                 setProductosEncontrados(response.data);
             }
-        }catch (e) {
+        } catch (e) {
             Swal.fire({
                 icon: "error",
                 title: "Producto no encontrado",
@@ -41,7 +49,7 @@ const NuevoPedido = () => {
     function productoBuscarVacio() {
         if (productoBuscar.trim() === "") {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -50,28 +58,28 @@ const NuevoPedido = () => {
         setProductoBuscar(e.target.value);
     }
 
-    function carritoVacio () {
-        if (carrito.length > 0){
+    function carritoVacio() {
+        if (carrito.length > 0) {
             return false;
         } else {
             return true;
         }
     }
 
-    function costoTotalCarrito(){
+    function costoTotalCarrito() {
         const carritoVacioCondicion = carritoVacio();
         if (carritoVacioCondicion) {
-        }else{
-            const totalCarrito = carrito.reduce((total, item) =>{
+        } else {
+            const totalCarrito = carrito.reduce((total, item) => {
                 return total + (item.cantidad * item.precio);
             }, 0);
             return totalCarrito;
         }
     }
 
-    async function savePedido(){
+    async function savePedido() {
         try {
-            const productosFormato = carrito.map((producto) =>{
+            const productosFormato = carrito.map((producto) => {
                 return {
                     producto: producto._id,
                     cantidad: producto.cantidad
@@ -88,7 +96,7 @@ const NuevoPedido = () => {
                 }
             });
 
-            if (response.status === 201){
+            if (response.status === 201) {
                 Swal.fire({
                     icon: "success",
                     title: "Pedido agregado correctamente!",
@@ -97,7 +105,7 @@ const NuevoPedido = () => {
                 })
                 navigate("/pedidos");
             }
-        }catch (e) {
+        } catch (e) {
             Swal.fire({
                 icon: "error",
                 title: "Error",
@@ -108,41 +116,45 @@ const NuevoPedido = () => {
         }
     }
 
+    useEffect(() => {
+        verificarAutenticacion();
+    }, []);
+
     return (
         <Fragment>
             <h2>Nuevo Pedido</h2>
-            <TarjetaDetallesCliente id={id} />
+            <TarjetaDetallesCliente id={id}/>
             <FormBuscarProducto
                 buscarProducto={buscarProducto}
                 leerDatosBusqueda={leerDatosBusqueda}
                 productoBuscarVacio={productoBuscarVacio}
             />
-                <ul className="resumen">
-                    {productoEncontrados.map((producto) => {
-                        return (
-                            <ListProductosEncontrados
-                                key={producto._id}
-                                producto={producto}
-                                carrito={carrito}
-                                setCarrito={setCarrito}
-                            />
-                        )
-                    })}
-                </ul>
+            <ul className="resumen">
+                {productoEncontrados.map((producto) => {
+                    return (
+                        <ListProductosEncontrados
+                            key={producto._id}
+                            producto={producto}
+                            carrito={carrito}
+                            setCarrito={setCarrito}
+                        />
+                    )
+                })}
+            </ul>
 
-                <DetallesCarrito carrito={carrito} />
-                <div className="campo">
-                    <label>Total:</label>
-                    <input type="number" name="precio" placeholder="Precio" readOnly="readonly"
-                        value={costoTotalCarrito()}
-                    />
-                </div>
-                <div className="enviar">
-                    <input type="submit" className="btn btn-verde" value="Realizar Pedido"
-                        disabled={carritoVacio()}
-                        onClick={savePedido}
-                    />
-                </div>
+            <DetallesCarrito carrito={carrito}/>
+            <div className="campo">
+                <label>Total:</label>
+                <input type="number" name="precio" placeholder="Precio" readOnly="readonly"
+                       value={costoTotalCarrito()}
+                />
+            </div>
+            <div className="enviar">
+                <input type="submit" className="btn btn-verde" value="Realizar Pedido"
+                       disabled={carritoVacio()}
+                       onClick={savePedido}
+                />
+            </div>
         </Fragment>
     );
 }

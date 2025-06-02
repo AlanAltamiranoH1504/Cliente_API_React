@@ -1,7 +1,8 @@
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {clienteAxios} from "../../config/axios";
 import Swal from "sweetalert2";
+import {CRMContext} from "../context/CRMContext";
 
 const NuevoProducto = () => {
     const navigate = useNavigate();
@@ -10,8 +11,15 @@ const NuevoProducto = () => {
         precio: "",
         imagen: ""
     });
+    const [auth, setAuth] = useContext(CRMContext);
 
-    function actualizarProducto(e){
+    function verificarAutenticacion() {
+        if (auth.token === "" && auth.auth == false) {
+            navigate("/iniciar-sesion");
+        }
+    }
+
+    function actualizarProducto(e) {
         setProducto({
             ...producto, [e.target.name]: e.target.value
         });
@@ -35,7 +43,7 @@ const NuevoProducto = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             });
-            if (response.status === 201){
+            if (response.status === 201) {
                 Swal.fire({
                     icon: "success",
                     title: "Producto guardado correctamente!",
@@ -44,7 +52,7 @@ const NuevoProducto = () => {
                 })
                 navigate("/productos");
             }
-        }catch (e) {
+        } catch (e) {
             Swal.fire({
                 icon: "error",
                 title: "Error el producto no fue agregado!",
@@ -54,6 +62,10 @@ const NuevoProducto = () => {
             navigate("/productos");
         }
     }
+
+    useEffect(() => {
+        verificarAutenticacion();
+    });
 
     return (
         <Fragment>
@@ -73,7 +85,7 @@ const NuevoProducto = () => {
                 <div className="campo">
                     <label>Precio:</label>
                     <input
-                        type="text" name="precio"  placeholder="Precio"
+                        type="text" name="precio" placeholder="Precio"
                         onChange={actualizarProducto}
                     />
                 </div>
