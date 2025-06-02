@@ -19,7 +19,11 @@ const NuevoPedido = () => {
         e.preventDefault();
         try {
             //Obtenemos productos de la busqueda
-            const response = await clienteAxios.post("/productos/producto/busqueda", {productoBuscar: productoBuscar});
+            const response = await clienteAxios.post("/productos/producto/busqueda", {productoBuscar: productoBuscar},{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 200){
                 setProductosEncontrados(response.data);
             }
@@ -78,6 +82,10 @@ const NuevoPedido = () => {
                 cliente: id,
                 productos: productosFormato,
                 total: costoTotalCarrito()
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
             });
 
             if (response.status === 201){

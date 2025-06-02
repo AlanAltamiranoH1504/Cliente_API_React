@@ -12,12 +12,16 @@ const EditarCliente = () => {
 
     async function busquedaCliente() {
         try {
-            const response = await clienteAxios.get(`/clientes/cliente/${id}`);
+            const response = await clienteAxios.get(`/clientes/cliente/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             setCliente(response.data);
         }catch (e) {
             Swal.fire({
                 title: "Error en busqueda de cliente",
-                text: "No se encontro un cliente con el ID: "  + id,
+                text: e.response.data.error,
                 icon: "error",
                 timer: 3000,
             });
@@ -42,7 +46,11 @@ const EditarCliente = () => {
     async function updateCliente(e){
         e.preventDefault();
         try {
-            const response = await clienteAxios.put(`/clientes/cliente/${id}`, cliente);
+            const response = await clienteAxios.put(`/clientes/cliente/${id}`, cliente, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 200){
                 Swal.fire({
                     icon: "success",

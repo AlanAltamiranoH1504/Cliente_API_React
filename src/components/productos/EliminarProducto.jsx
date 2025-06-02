@@ -11,7 +11,11 @@ const EliminarProducto = () => {
 
     async function deleteProducto(){
         try {
-            const response = await clienteAxios.delete(`/productos/producto/${id}`);
+            const response = await clienteAxios.delete(`/productos/producto/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 200){
                 Swal.fire({
                     icon: "success",

@@ -10,7 +10,11 @@ const Productos = () => {
     //Funciones
     async function peticionAPI () {
         try {
-            const response = await clienteAxios.get("/productos");
+            const response = await clienteAxios.get("/productos",{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             setProductos(response.data);
         }catch (e) {
             console.log("Error en busqueda de productos");

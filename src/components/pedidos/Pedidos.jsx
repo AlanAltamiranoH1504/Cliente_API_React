@@ -10,7 +10,11 @@ const Pedidos = () => {
 
     async function getAllPedidos() {
         try {
-            const response = await clienteAxios.get("/pedidos");
+            const response = await clienteAxios.get("/pedidos", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 200 && response.data.length > 0) {
                 setPedidos(response.data);
             } else {
@@ -33,7 +37,11 @@ const Pedidos = () => {
 
      async function eliminarPedido(pedido) {
         try {
-            const response = await clienteAxios.delete(`/pedidos/${pedido._id}`);
+            const response = await clienteAxios.delete(`/pedidos/${pedido._id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 200){
                 Swal.fire({
                     icon: "success",

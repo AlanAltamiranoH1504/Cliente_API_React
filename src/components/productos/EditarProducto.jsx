@@ -11,7 +11,11 @@ const EditarProducto = () => {
 
     async function findProducto() {
         try {
-            const response = await clienteAxios.get(`/productos/producto/${id}`);
+            const response = await clienteAxios.get(`/productos/producto/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 200) {
                 setProducto(response.data);
             }
@@ -44,7 +48,11 @@ const EditarProducto = () => {
     async function updateProducto(e){
         e.preventDefault();
         try {
-            const response = await clienteAxios.put(`/productos/producto/${id}`, producto);
+            const response = await clienteAxios.put(`/productos/producto/${id}`, producto, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 200){
                 Swal.fire({
                     icon: "success",

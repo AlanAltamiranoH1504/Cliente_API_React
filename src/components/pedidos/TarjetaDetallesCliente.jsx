@@ -9,7 +9,11 @@ const TarjetaDetallesCliente = ({id}) => {
 
     async function getCliente(){
         try {
-            const response = await clienteAxios.get(`/clientes/cliente/${id}`);
+            const response = await clienteAxios.get(`/clientes/cliente/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 200){
                 setCliente(response.data);
             }

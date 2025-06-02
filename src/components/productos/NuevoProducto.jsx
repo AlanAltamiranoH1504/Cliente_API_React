@@ -30,7 +30,11 @@ const NuevoProducto = () => {
     async function saveProducto(e) {
         e.preventDefault();
         try {
-            const response = await clienteAxios.post("/productos/producto", producto);
+            const response = await clienteAxios.post("/productos/producto", producto, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 201){
                 Swal.fire({
                     icon: "success",

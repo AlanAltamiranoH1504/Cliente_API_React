@@ -33,7 +33,11 @@ const NuevoCliente = () => {
     async function saveCliente(e) {
         e.preventDefault();
         try {
-            const response = await clienteAxios.post("/clientes/cliente", cliente);
+            const response = await clienteAxios.post("/clientes/cliente", cliente, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 201){
                 Swal.fire({
                     title: "Cliente agregado correctamente!",
@@ -44,7 +48,13 @@ const NuevoCliente = () => {
                 navigate("/");
             }
         }catch (error) {
-            console.log("Error en peticion al backend: " + error.message);
+            Swal.fire({
+                title: "Error en creacion de nuevo cliente!",
+                text: error.response.data.error,
+                icon: "error",
+                timer: 3000
+            });
+            navigate("/");
         }
     }
 

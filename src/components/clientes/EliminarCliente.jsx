@@ -12,7 +12,11 @@ const EliminarCliente = () => {
     //Funciones
     async function eliminarCliente(){
         try {
-            const response = await clienteAxios.delete(`/clientes/cliente/${id}`);
+            const response = await clienteAxios.delete(`/clientes/cliente/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
             if (response.status === 200){
                 Swal.fire({
                     title: "Cliente eliminado correctamente!",
