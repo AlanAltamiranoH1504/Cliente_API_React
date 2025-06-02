@@ -1,21 +1,34 @@
-import React, {useEffect, useState, Fragment} from "react";
+import React, {useEffect, useState, Fragment, useContext} from "react";
 import {clienteAxios} from "../../config/axios";
 import ClienteDetalles from "./ClienteDetalle";
+import {useNavigate} from "react-router-dom";
+import {CRMContext} from "../context/CRMContext";
 import {Link} from "react-router-dom";
 
 const Cliente = () => {
+    const navigate = useNavigate();
     //useState
-    const [clientes, setClientes] = useState([])
+    const [clientes, setClientes] = useState([]);
+    //Uso de context
+    const [auth, setAuth] = useContext(CRMContext);
 
     //Funciones
     async function consultarAPI() {
-        const listClientes = await clienteAxios.get("/clientes", {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`
+        if (auth.token !== "" && auth.auth == true){
+            try {
+                const listClientes = await clienteAxios.get("/clientes", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+                const {data} = listClientes;
+                setClientes(data);
+            }catch (e) {
+                navigate("/iniciar-sesion");
             }
-        });
-        const {data} = listClientes;
-        setClientes(data);
+        } else {
+            navigate("/iniciar-sesion");
+        }
     }
 
     //UseEffect detecta cambios en algun useState

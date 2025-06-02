@@ -1,6 +1,7 @@
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useContext, useState} from "react";
 import {clienteAxios} from "../../config/axios";
 import {useNavigate} from "react-router-dom";
+import {CRMContext} from "../context/CRMContext";
 import Swal from "sweetalert2";
 
 const Login = () => {
@@ -9,6 +10,7 @@ const Login = () => {
         email: "",
         password: ""
     });
+    const [auth, setAuth] = useContext(CRMContext);
 
     function leerDatos(e) {
         setFormulario({
@@ -31,6 +33,10 @@ const Login = () => {
             const response = await clienteAxios.post("/usuarios/autenticacion", formulario);
             const token = response.data.token;
             seteoToken(token);
+            setAuth({
+                token,
+                auth: true
+            })
             if (response.status === 200){
                 Swal.fire({
                     icon: "success",
